@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand OOP Bank Web ATM System</title>
+    <!-- Google Fonts: Inter and Monospace for digital display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="app-wrapper">
+        
+        <!-- Left Column: The Mockup Physical ATM Machine -->
+        <div class="atm-physical-casing">
+            
+            <div class="atm-branding">
+                <div class="logo">🏦 GRAND OOP BANK</div>
+                <div class="motto">Safe • Secure • Encapsulated</div>
+            </div>
+
+            <!-- ATM SCREEN AREA -->
+            <div class="atm-screen-bezel">
+                <div class="atm-screen" id="atm-screen">
+                    
+                    <!-- SCREEN: INSERT CARD (Home) -->
+                    <div class="screen-state active" id="screen-insert-card">
+                        <div class="display-title">Welcome to Grand OOP Bank</div>
+                        <div class="card-insertion-graphic">
+                            <div class="card-arrow">↓</div>
+                            <div class="card-rect">DEBIT CARD</div>
+                        </div>
+                        <div class="instruction-text">Please insert your ATM card from the card selector.</div>
+                        <div class="card-selector-container">
+                            <label for="simulation-card-select">Choose a Demo Card:</label>
+                            <select id="simulation-card-select">
+                                <option value="" disabled selected>-- Select Card --</option>
+                            </select>
+                            <button class="btn btn-action" id="btn-insert-selected-card">Insert Card</button>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN: ENTER PIN -->
+                    <div class="screen-state" id="screen-enter-pin">
+                        <div class="display-title">Card Authenticated</div>
+                        <div class="instruction-text">Please enter your 4-digit PIN using the physical keypad.</div>
+                        <div class="pin-display-container">
+                            <div class="pin-dots" id="pin-dots">
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                            </div>
+                        </div>
+                        <div class="error-msg-text" id="pin-error-message"></div>
+                        <div class="session-attempts-warning" id="pin-attempts-warning"></div>
+                    </div>
+
+                    <!-- SCREEN: MAIN MENU -->
+                    <div class="screen-state" id="screen-main-menu">
+                        <div class="screen-header">
+                            <div class="holder-name" id="menu-holder-name">John Doe</div>
+                            <div class="active-acc-label" id="menu-active-account">SAV-1001</div>
+                        </div>
+                        <div class="menu-layout">
+                            <div class="menu-col">
+                                <button class="menu-btn" data-action="balance">1. Check Balance</button>
+                                <button class="menu-btn" data-action="deposit">2. Deposit Cash</button>
+                                <button class="menu-btn" data-action="withdraw">3. Withdraw Cash</button>
+                                <button class="menu-btn" data-action="transfer">4. Transfer Money</button>
+                            </div>
+                            <div class="menu-col">
+                                <button class="menu-btn" data-action="pin">5. Change PIN</button>
+                                <button class="menu-btn" data-action="statement">6. Mini Statement</button>
+                                <button class="menu-btn" data-action="switch">7. Switch Account</button>
+                                <button class="menu-btn" data-action="eject">8. Exit / Eject Card</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN: BALANCE -->
+                    <div class="screen-state" id="screen-balance">
+                        <div class="display-title">Account Balance</div>
+                        <div class="balance-details">
+                            <div class="detail-row">
+                                <span>Account:</span>
+                                <strong id="balance-account-number">-</strong>
+                            </div>
+                            <div class="detail-row">
+                                <span>Current Balance:</span>
+                                <strong class="text-green" id="balance-amount">Rs. 0.00</strong>
+                            </div>
+                            <div class="detail-row">
+                                <span>Max Withdrawable:</span>
+                                <strong class="text-blue" id="balance-withdrawable">Rs. 0.00</strong>
+                            </div>
+                        </div>
+                        <div class="back-btn-container">
+                            <button class="btn btn-menu-back">Return to Main Menu</button>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN: DEPOSIT -->
+                    <div class="screen-state" id="screen-deposit">
+                        <div class="display-title">Deposit Cash</div>
+                        <div class="instruction-text">Enter the deposit amount.</div>
+                        <div class="amount-input-box" id="deposit-amount-display">Rs. 0</div>
+                        <div class="error-msg-text" id="deposit-error-message"></div>
+                        <div class="dual-btn-row">
+                            <button class="btn btn-cancel" id="btn-cancel-deposit">Cancel</button>
+                            <button class="btn btn-confirm" id="btn-confirm-deposit">Confirm Deposit</button>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN: WITHDRAW -->
+                    <div class="screen-state" id="screen-withdraw">
+                        <div class="display-title">Cash Withdrawal</div>
+                        <div class="instruction-text">Select a preset amount or enter a custom amount (multiples of 500).</div>
+                        <div class="preset-with-grid">
+                            <button class="preset-btn" data-amount="500">Rs. 500</button>
+                            <button class="preset-btn" data-amount="1000">Rs. 1,000</button>
+                            <button class="preset-btn" data-amount="2000">Rs. 2,000</button>
+                            <button class="preset-btn" data-amount="5000">Rs. 5,000</button>
+                            <button class="preset-btn" data-amount="10000">Rs. 10,000</button>
+                            <button class="preset-btn" id="btn-custom-withdraw">Custom</button>
+                        </div>
+                        <div class="custom-amount-area hidden" id="custom-withdraw-area">
+                            <div class="amount-input-box" id="withdraw-amount-display">Rs. 0</div>
+                        </div>
+                        <div class="error-msg-text" id="withdraw-error-message"></div>
+                        <div class="dual-btn-row">
+                            <button class="btn btn-cancel" id="btn-cancel-withdraw">Cancel</button>
+                            <button class="btn btn-confirm hidden" id="btn-confirm-withdraw">Confirm</button>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN: TRANSFER -->
+                    <div class="screen-state" id="screen-transfer">
+                        <div class="display-title">Money Transfer</div>
+                        <div class="transfer-form">
+                            <div class="form-group">
+                                <label>Recipient Account:</label>
+                                <div class="field-value-display active-field" id="transfer-field-recipient">Enter Number</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (Rs.):</label>
+                                <div class="field-value-display" id="transfer-field-amount">Rs. 0</div>
+                            </div>
+                        </div>
+                        <div class="error-msg-text" id="transfer-error-message"></div>
+                        <div class="dual-btn-row">
+                            <button class="btn btn-cancel" id="btn-cancel-transfer">Cancel</button>
+                            <button class="btn btn-confirm" id="btn-confirm-transfer">Transfer</button>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN: CHANGE PIN -->
+                    <div class="screen-state" id="screen-change-pin">
+                        <div class="display-title">Change Card PIN</div>
+                        <div class="pin-form">
+                            <div class="form-group">
+                                <label>Current PIN:</label>
+                                <div class="field-value-display active-field" id="pin-field-old">----</div>
+                            </div>
+                            <div class="form-group">
+                                <label>New PIN:</label>
+                                <div class="field-value-display" id="pin-field-new">----</div>
+                            </div>
+                        </div>
+                        <div class="error-msg-text" id="pin-change-error-message"></div>
+                        <div class="dual-btn-row">
+                            <button class="btn btn-cancel" id="btn-cancel-change-pin">Cancel</button>
+                            <button class="btn btn-confirm" id="btn-confirm-change-pin">Update</button>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN: MINI STATEMENT -->
+                    <div class="screen-state" id="screen-statement">
+                        <div class="display-title">Mini Statement</div>
+                        <div class="statement-table-container">
+                            <table class="statement-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Amount (Rs.)</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="statement-rows">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="statement-footer">
+                            <span>Balance:</span>
+                            <strong id="statement-final-balance">Rs. 0.00</strong>
+                        </div>
+                        <div class="back-btn-container">
+                            <button class="btn btn-menu-back">Return to Main Menu</button>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN: SWITCH ACCOUNT -->
+                    <div class="screen-state" id="screen-switch-account">
+                        <div class="display-title">Select Account</div>
+                        <div class="account-selection-list" id="account-list-container">
+                            <!-- Populated dynamically -->
+                        </div>
+                        <div class="back-btn-container">
+                            <button class="btn btn-menu-back">Return to Main Menu</button>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN: TXN PROCESSING / LOADING -->
+                    <div class="screen-state" id="screen-processing">
+                        <div class="loading-container">
+                            <div class="spinner"></div>
+                            <div class="loading-text" id="processing-loading-text">Processing Transaction...</div>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN: SUCCESS -->
+                    <div class="screen-state" id="screen-success">
+                        <div class="success-graphic">✓</div>
+                        <div class="display-title text-green">Transaction Successful</div>
+                        <div class="success-details" id="success-details-content">
+                            <!-- Details injected dynamically -->
+                        </div>
+                        <div class="back-btn-container">
+                            <button class="btn btn-menu-back">Return to Main Menu</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ATM PHYSICAL SLOTS -->
+            <div class="atm-slots-grid">
+                
+                <!-- CARD READER SLOT -->
+                <div class="slot-casing card-slot-casing">
+                    <div class="slot-label">CARD READER</div>
+                    <div class="slot-inlet card-slot-inlet" id="card-slot-inlet">
+                        <div class="inserted-card-visual" id="card-in-slot"></div>
+                    </div>
+                </div>
+
+                <!-- CASH DISPENSER SLOT -->
+                <div class="slot-casing cash-slot-casing">
+                    <div class="slot-label">CASH DISPENSER</div>
+                    <div class="slot-inlet cash-slot-inlet" id="cash-slot-inlet">
+                        <!-- Dispensed notes element appears here upon successful withdrawal -->
+                        <div class="cash-notes-dispensed" id="cash-notes-dispensed">
+                            <span class="note-edge">💵</span>
+                            <span class="collect-text">Collect Cash</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- PHYSICAL KEYPAD -->
+            <div class="atm-physical-keypad">
+                <div class="keypad-grid">
+                    <button class="keypad-btn key-num" data-val="1">1</button>
+                    <button class="keypad-btn key-num" data-val="2">2</button>
+                    <button class="keypad-btn key-num" data-val="3">3</button>
+                    
+                    <button class="keypad-btn key-action cancel" id="keypad-cancel">CANCEL</button>
+                    
+                    <button class="keypad-btn key-num" data-val="4">4</button>
+                    <button class="keypad-btn key-num" data-val="5">5</button>
+                    <button class="keypad-btn key-num" data-val="6">6</button>
+                    
+                    <button class="keypad-btn key-action clear" id="keypad-clear">CLEAR</button>
+                    
+                    <button class="keypad-btn key-num" data-val="7">7</button>
+                    <button class="keypad-btn key-num" data-val="8">8</button>
+                    <button class="keypad-btn key-num" data-val="9">9</button>
+                    
+                    <button class="keypad-btn key-action enter" id="keypad-enter">ENTER</button>
+                    
+                    <button class="keypad-btn key-empty"></button>
+                    <button class="keypad-btn key-num" data-val="0">0</button>
+                    <button class="keypad-btn key-empty"></button>
+                    <button class="keypad-btn key-empty"></button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Developer/Admin panel (To view backend databases/ATM vault state in real-time) -->
+        <div class="admin-panel">
+            <div class="admin-panel-header">
+                <h2>🏦 BANK ADMINISTRATOR PANEL</h2>
+                <button class="btn btn-action reset-db-btn" id="btn-admin-reset-db">Factory Reset DB</button>
+            </div>
+            
+            <!-- SECTION 1: ATM VAULT INVENTORY -->
+            <div class="admin-section">
+                <h3>ATM Vault Reserves</h3>
+                <div class="vault-totals">
+                    <span>Total Cash:</span>
+                    <strong class="text-green" id="admin-vault-total">Rs. 100,000.00</strong>
+                </div>
+                <div class="vault-denoms-grid">
+                    <div class="denom-card">
+                        <div class="val">Rs. 5,000</div>
+                        <div class="count" id="admin-count-5000">10 notes</div>
+                    </div>
+                    <div class="denom-card">
+                        <div class="val">Rs. 1,000</div>
+                        <div class="count" id="admin-count-1000">30 notes</div>
+                    </div>
+                    <div class="denom-card">
+                        <div class="val">Rs. 500</div>
+                        <div class="count" id="admin-count-500">40 notes</div>
+                    </div>
+                </div>
+                
+                <!-- RESTOCK VAULT FORM -->
+                <div class="admin-subform">
+                    <h4>Restock Vault Notes</h4>
+                    <div class="inline-inputs">
+                        <input type="number" id="input-restock-5000" placeholder="5000s" min="0">
+                        <input type="number" id="input-restock-1000" placeholder="1000s" min="0">
+                        <input type="number" id="input-restock-500" placeholder="500s" min="0">
+                        <button class="btn btn-confirm" id="btn-admin-restock">Restock</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: CUSTOMERS & CARDS & ACCOUNTS -->
+            <div class="admin-section">
+                <div class="section-title-row">
+                    <h3>Bank Database Accounts</h3>
+                    <button class="btn btn-action" id="btn-admin-reset-limits">Reset Daily Limits</button>
+                </div>
+                <div class="admin-db-list" id="admin-db-users-list">
+                    <!-- Populated dynamically with cards/accounts lists -->
+                </div>
+            </div>
+
+            <div class="admin-system-logs">
+                <div class="log-indicator">System Logs: REST API connected</div>
+                <div class="status-indicator-dot"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Collection Modal for Cash -->
+    <div class="modal-overlay hidden" id="cash-collection-modal">
+        <div class="modal-card">
+            <h3>💵 Collect Dispensed Cash</h3>
+            <p>Your withdrawal transaction completed successfully. The notes have been dispensed from the cash slot below.</p>
+            <div class="modal-dispensed-breakdown" id="modal-dispensed-notes-content">
+                <!-- Breakdown list -->
+            </div>
+            <button class="btn btn-confirm" id="btn-modal-collect-cash">Take Cash</button>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
