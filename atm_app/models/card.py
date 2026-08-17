@@ -40,6 +40,7 @@ class Card:
             raise CardBlockedError("This card is blocked due to excessive incorrect PIN attempts.")
 
         hashed_input = hash_pin(pin)
+        print(f"\n[DEBUG] verify_pin: input_pin='{pin}', input_hash='{hashed_input}', database_hash='{self._pin_hash}'\n")
         if hashed_input == self._pin_hash:
             self._pin_attempts = 0  # Reset on successful validation
             return True

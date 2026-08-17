@@ -457,13 +457,14 @@ function highlightPinFields() {
 
 async function submitPINLogin() {
     const cardNum = document.getElementById("simulation-card-select").value;
+    const pinVal = pinInput; // Capture input before loading screen clears buffer
     showLoading("Authenticating PIN...");
     
     try {
         const res = await fetch("/api/insert-card", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ card_number: cardNum, pin: pinInput })
+            body: JSON.stringify({ card_number: cardNum, pin: pinVal })
         });
         const data = await res.json();
         
@@ -629,13 +630,14 @@ async function handleTransferConfirm() {
         return;
     }
     
+    const targetAcc = transferRecipient; // Capture before loading clears buffer
     const amt = parseFloat(transferAmount);
     showLoading("Executing double-ledger transfer...");
     try {
         const res = await fetch("/api/transfer", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ target_account_number: transferRecipient, amount: amt })
+            body: JSON.stringify({ target_account_number: targetAcc, amount: amt })
         });
         const data = await res.json();
         
@@ -665,12 +667,14 @@ async function handlePinChangeConfirm() {
         return;
     }
     
+    const oldPinVal = pinChangeOld; // Capture before loading clears buffer
+    const newPinVal = pinChangeNew;
     showLoading("Validating card security constraints...");
     try {
         const res = await fetch("/api/change-pin", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ old_pin: pinChangeOld, new_pin: pinChangeNew })
+            body: JSON.stringify({ old_pin: oldPinVal, new_pin: newPinVal })
         });
         const data = await res.json();
         
@@ -912,3 +916,38 @@ async function adminToggleCard(cardNum, targetStatus) {
     }
 }
 window.adminToggleCard = adminToggleCard;
+
+// Add physical keyboard listener
+document.addEventListener("keydown", (e) => {
+    // If user is typing in administrative input fields, don't hijack keyboard inputs
+    if (e.target.tagName === "INPUT") {
+        return;
+    }
+    
+    const key = e.key;
+
+    // Alphanumeric + dash entry for recipient account number
+    if (currentScreen === "transfer" && transferActiveField === "recipient") {
+        if (key.length === 1 && /[a-zA-Z0-9\-]/.test(key)) {
+            if (transferRecipient.length < 12) {
+                // If it is initial text, clear it first
+                if (transferRecipient === "Enter Number") {
+                    transferRecipient = "";
+                }
+                transferRecipient += key.toUpperCase();
+                updateTransferFieldDisplays();
+            }
+            return;
+        }
+    }
+    
+    if (key >= "0" && key <= "9") {
+        handleKeypadNumber(key);
+    } else if (key === "Enter") {
+        handleKeypadEnter();
+    } else if (key === "Escape") {
+        handleKeypadCancel();
+    } else if (key === "Backspace" || key === "Delete") {
+        handleKeypadClear();
+    }
+});
