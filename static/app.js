@@ -157,8 +157,8 @@ async function fetchCards() {
         
         cards.forEach(card => {
             const opt = document.createElement("option");
-            opt.value = card.card_number;
-            opt.textContent = `${card.holder_name} (${card.card_number.substring(0, 4)}...) - ${card.status}`;
+            const pinHint = card.card_number.startsWith("1111") ? "4321" : card.card_number.startsWith("5555") ? "5678" : "1984";
+            opt.textContent = `${card.holder_name} (PIN: ${pinHint}) - ${card.status}`;
             if (card.status === "BLOCKED") {
                 opt.disabled = true;
                 opt.textContent += " [BLOCKED]";
