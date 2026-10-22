@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 from atm_app.exceptions import InsufficientATMFundsError, InvalidAmountError
 from atm_app.models.bank import Bank
 
@@ -77,9 +77,6 @@ class ATM:
                 if res is not None:
                     return res
             return None
-
-        # Helper import to satisfy typing
-        from typing import Optional
 
         solution = find_combination(0, target, {})
         if solution is None:
