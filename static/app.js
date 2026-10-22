@@ -519,7 +519,14 @@ function handleMenuNavigation(action) {
 }
 
 async function loadBalanceScreen() {
-    showLoading("Checking account parameters...");
+    // Immediate render from existing session
+    if (activeSession && activeSession.active_account) {
+        document.getElementById("balance-account-number").textContent = `${activeSession.active_account.account_number} (${activeSession.active_account.type})`;
+        document.getElementById("balance-amount").textContent = `Rs. ${activeSession.active_account.balance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById("balance-withdrawable").textContent = `Rs. ${activeSession.active_account.withdrawal_limit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+
+    // Refresh from server to guarantee sync
     try {
         const res = await fetch("/api/session");
         const data = await res.json();
@@ -528,12 +535,9 @@ async function loadBalanceScreen() {
             document.getElementById("balance-account-number").textContent = `${data.active_account.account_number} (${data.active_account.type})`;
             document.getElementById("balance-amount").textContent = `Rs. ${data.active_account.balance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             document.getElementById("balance-withdrawable").textContent = `Rs. ${data.active_account.withdrawal_limit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            showScreen("balance");
-        } else {
-            showScreen("main-menu");
         }
     } catch (e) {
-        showScreen("main-menu");
+        console.error("Error refreshing balance:", e);
     }
 }
 
