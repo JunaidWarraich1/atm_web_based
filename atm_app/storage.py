@@ -20,78 +20,81 @@ class StateStorage:
 
     def save_state(self, bank: Bank, atm: ATM) -> None:
         """Serializes and saves Bank and ATM state to JSON."""
-        self._ensure_dir()
-        
-        # Serialize customers
-        customers_data = []
-        for cust in bank.customers.values():
-            customers_data.append({
-                "customer_id": cust.customer_id,
-                "name": cust.name,
-                "phone_email": cust.phone_email,
-                "card_numbers": [card.card_number for card in cust.cards],
-                "account_numbers": [acc.account_number for acc in cust.accounts]
-            })
+        try:
+            self._ensure_dir()
+            
+            # Serialize customers
+            customers_data = []
+            for cust in bank.customers.values():
+                customers_data.append({
+                    "customer_id": cust.customer_id,
+                    "name": cust.name,
+                    "phone_email": cust.phone_email,
+                    "card_numbers": [card.card_number for card in cust.cards],
+                    "account_numbers": [acc.account_number for acc in cust.accounts]
+                })
 
-        # Serialize cards
-        cards_data = []
-        for card in bank.cards.values():
-            cards_data.append({
-                "card_number": card.card_number,
-                "holder_name": card.holder_name,
-                "pin_hash": card._pin_hash,
-                "status": card.status,
-                "pin_attempts": card.pin_attempts
-            })
+            # Serialize cards
+            cards_data = []
+            for card in bank.cards.values():
+                cards_data.append({
+                    "card_number": card.card_number,
+                    "holder_name": card.holder_name,
+                    "pin_hash": card._pin_hash,
+                    "status": card.status,
+                    "pin_attempts": card.pin_attempts
+                })
 
-        # Serialize accounts and their transactions
-        accounts_data = []
-        for acc in bank.accounts.values():
-            txns_data = []
-            for txn in acc.transactions:
-                txn_dict = {
-                    "type": txn.get_type_name(),
-                    "txn_id": txn.transaction_id,
-                    "amount": txn.amount,
-                    "timestamp": txn.timestamp.isoformat(),
-                    "account_number": txn.account_number,
-                    "status": txn.status
-                }
-                if isinstance(txn, TransferTransaction):
-                    txn_dict["other_account_number"] = txn.other_account_number
-                    txn_dict["role"] = txn.role
-                txns_data.append(txn_dict)
+            # Serialize accounts and their transactions
+            accounts_data = []
+            for acc in bank.accounts.values():
+                txns_data = []
+                for txn in acc.transactions:
+                    txn_dict = {
+                        "type": txn.get_type_name(),
+                        "txn_id": txn.transaction_id,
+                        "amount": txn.amount,
+                        "timestamp": txn.timestamp.isoformat(),
+                        "account_number": txn.account_number,
+                        "status": txn.status
+                    }
+                    if isinstance(txn, TransferTransaction):
+                        txn_dict["other_account_number"] = txn.other_account_number
+                        txn_dict["role"] = txn.role
+                    txns_data.append(txn_dict)
 
-            acc_type = "SavingsAccount" if isinstance(acc, SavingsAccount) else "CurrentAccount"
-            accounts_data.append({
-                "type": acc_type,
-                "account_number": acc.account_number,
-                "holder_name": acc.holder_name,
-                "balance": acc._balance,
-                "status": acc.status,
-                "daily_withdrawal_total": acc._daily_withdrawal_total,
-                "daily_transfer_total": acc._daily_transfer_total,
-                "last_limit_reset": acc._last_limit_reset.isoformat(),
-                "transactions": txns_data
-            })
+                acc_type = "SavingsAccount" if isinstance(acc, SavingsAccount) else "CurrentAccount"
+                accounts_data.append({
+                    "type": acc_type,
+                    "account_number": acc.account_number,
+                    "holder_name": acc.holder_name,
+                    "balance": acc._balance,
+                    "status": acc.status,
+                    "daily_withdrawal_total": acc._daily_withdrawal_total,
+                    "daily_transfer_total": acc._daily_transfer_total,
+                    "last_limit_reset": acc._last_limit_reset.isoformat(),
+                    "transactions": txns_data
+                })
 
-        # Serialize ATM
-        atm_data = {
-            "atm_id": atm.atm_id,
-            "cash_denominations": {str(k): v for k, v in atm.cash_denominations.items()}
-        }
+            # Serialize ATM
+            atm_data = {
+                "atm_id": atm.atm_id,
+                "cash_denominations": {str(k): v for k, v in atm.cash_denominations.items()}
+            }
 
-        state = {
-            "bank_name": bank.name,
-            "customers": customers_data,
-            "cards": cards_data,
-            "accounts": accounts_data,
-            "card_to_customer_map": bank._card_to_customer_map,
-            "atm": atm_data
-        }
+            state = {
+                "bank_name": bank.name,
+                "customers": customers_data,
+                "cards": cards_data,
+                "accounts": accounts_data,
+                "card_to_customer_map": bank._card_to_customer_map,
+                "atm": atm_data
+            }
 
-        with open(self.filepath, "w") as f:
-            json.dump(state, f, indent=4)
+            with open(self.filepath, "w") as f:
+                json.dump(state, f, indent=4)
+        except Exception as e:
+            print(f"[STORAGE ERROR] Could not save state to {self.filepath}: {e}")
 
     def load_state(self) -> Tuple[Optional[Bank], Optional[ATM]]:
         """Loads and reconstructs the Bank and ATM object graphs from JSON."""

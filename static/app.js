@@ -576,15 +576,28 @@ async function handleDepositConfirm() {
 
 async function submitWithdraw(amount) {
     showLoading("Validating cash dispenser reserves...");
+    const activeCard = (activeSession && activeSession.card_number) 
+        ? activeSession.card_number 
+        : document.getElementById("simulation-card-select").value;
+
     try {
         const res = await fetch("/api/withdraw", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "X-Card-Number": activeCard || ""
+            },
             body: JSON.stringify({ amount: amount })
         });
-        const data = await res.json();
+
+        let data;
+        try {
+            data = await res.json();
+        } catch (jsonErr) {
+            data = { detail: "Transaction processing error. Please try again." };
+        }
         
-        if (res.ok) {
+        if (res.ok && data.success) {
             // Trigger Cash Dispensed Visual!
             document.getElementById("cash-slot-inlet").classList.add("active");
             document.getElementById("cash-notes-dispensed").classList.add("active");
@@ -610,11 +623,11 @@ async function submitWithdraw(amount) {
             await updateAdminView();
         } else {
             showScreen("withdraw");
-            document.getElementById("withdraw-error-message").textContent = data.detail;
+            document.getElementById("withdraw-error-message").textContent = data.detail || "Withdrawal failed.";
         }
     } catch (e) {
         showScreen("withdraw");
-        document.getElementById("withdraw-error-message").textContent = "Withdrawal failed. Check network connection.";
+        document.getElementById("withdraw-error-message").textContent = e.message || "Withdrawal failed.";
     }
 }
 
