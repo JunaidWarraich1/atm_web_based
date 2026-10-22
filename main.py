@@ -13,7 +13,8 @@ from atm_app.storage import StateStorage
 app = FastAPI(title="Grand OOP Bank Web ATM API", version="2.0.0")
 
 # Setup backend references
-storage = StateStorage(data_dir=os.path.join(os.path.dirname(__file__), "data"))
+data_dir = "/tmp/data" if os.environ.get("VERCEL") else os.path.join(os.path.dirname(__file__), "data")
+storage = StateStorage(data_dir=data_dir)
 bank, atm = storage.load_state()
 
 # Helper to load demo data if none exists
