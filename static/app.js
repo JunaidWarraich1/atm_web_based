@@ -813,7 +813,7 @@ function setupAdminPanel() {
 
     // Reset DB click
     document.getElementById("btn-admin-reset-db").addEventListener("click", async () => {
-        if (confirm("This will erase all custom transactions, limits, and reset to default John and Jane. Are you sure?")) {
+        if (confirm("This will erase all custom transactions, limits, and reset to default demo accounts. Are you sure?")) {
             try {
                 const res = await fetch("/api/admin/reset", { method: "POST" });
                 const data = await res.json();

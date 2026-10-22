@@ -23,26 +23,26 @@ def load_default_data():
     bank = Bank("Grand OOP Bank")
     
     # Register customers
-    john = Customer("C-1001", "John Doe", "john.doe@email.com")
-    jane = Customer("C-1002", "Jane Smith", "jane.smith@email.com")
-    bank.register_customer(john)
-    bank.register_customer(jane)
+    junaid = Customer("C-1001", "Muhammad Junaid", "junaid.warraich@email.com")
+    ali = Customer("C-1002", "Ali Hassan", "ali.hassan@email.com")
+    bank.register_customer(junaid)
+    bank.register_customer(ali)
 
     # Register accounts
-    john_sav = SavingsAccount("SAV-1001", "John Doe", 25000.0)
-    john_cur = CurrentAccount("CUR-1001", "John Doe", 10000.0)
-    jane_sav = SavingsAccount("SAV-1002", "Jane Smith", 75000.0)
-    bank.add_account("C-1001", john_sav)
-    bank.add_account("C-1001", john_cur)
-    bank.add_account("C-1002", jane_sav)
+    junaid_sav = SavingsAccount("SAV-1001", "Muhammad Junaid", 25000.0)
+    junaid_cur = CurrentAccount("CUR-1001", "Muhammad Junaid", 10000.0)
+    ali_sav = SavingsAccount("SAV-1002", "Ali Hassan", 75000.0)
+    bank.add_account("C-1001", junaid_sav)
+    bank.add_account("C-1001", junaid_cur)
+    bank.add_account("C-1002", ali_sav)
 
     # Register cards
-    card_john1 = Card("1111-2222-3333-4444", "John Doe", "4321")
-    card_john2 = Card("5555-6666-7777-8888", "John Doe", "5678")
-    card_jane = Card("9876-5432-1098-7654", "Jane Smith", "1984")
-    bank.add_card("C-1001", card_john1)
-    bank.add_card("C-1001", card_john2)
-    bank.add_card("C-1002", card_jane)
+    card_junaid1 = Card("1111-2222-3333-4444", "Muhammad Junaid", "4321")
+    card_junaid2 = Card("5555-6666-7777-8888", "Muhammad Junaid", "5678")
+    card_ali = Card("9876-5432-1098-7654", "Ali Hassan", "1984")
+    bank.add_card("C-1001", card_junaid1)
+    bank.add_card("C-1001", card_junaid2)
+    bank.add_card("C-1002", card_ali)
 
     # Restock ATM cash (Rs. 100,000 total)
     atm = ATM("ATM-WEB-PRO", bank, {5000: 10, 1000: 30, 500: 40})

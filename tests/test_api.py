@@ -36,7 +36,7 @@ class TestWebATMAPI(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         data = res.json()
         self.assertTrue(data["success"])
-        self.assertEqual(data["customer_name"], "John Doe")
+        self.assertEqual(data["customer_name"], "Muhammad Junaid")
         self.assertEqual(data["active_account"]["account_number"], "SAV-1001")
 
     def test_insert_card_failed_pin(self):
@@ -67,7 +67,7 @@ class TestWebATMAPI(unittest.TestCase):
         self.assertEqual(res_post.status_code, 200)
         data = res_post.json()
         self.assertTrue(data["authenticated"])
-        self.assertEqual(data["customer_name"], "John Doe")
+        self.assertEqual(data["customer_name"], "Muhammad Junaid")
         self.assertEqual(data["active_account"]["account_number"], "SAV-1001")
 
     def test_switch_account(self):
